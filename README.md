@@ -1,0 +1,2 @@
+# escalaenfermagem
+Fazer escala enfermagem
