@@ -13,8 +13,8 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
 <style>
-:root{--bg:#f1f5f9;--card:#fff;--txt:#0f172a;--mut:#64748b;--pri:#0f766e;--pri2:#ccfbf1;--fol:#d97706;--fol2:#fef3c7;--bd:#e2e8f0;--red:#dc2626}
-@media(prefers-color-scheme:dark){:root{--bg:#0b1220;--card:#162033;--txt:#e5edf7;--mut:#94a3b8;--pri:#2dd4bf;--pri2:#134e4a;--fol:#fbbf24;--fol2:#451a03;--bd:#27344d}}
+:root{--bg:#f1f5f9;--card:#fff;--txt:#0f172a;--mut:#64748b;--pri:#0f766e;--pri2:#ccfbf1;--fol:#d97706;--fol2:#fef3c7;--aus:#475569;--aus2:#e2e8f0;--bd:#e2e8f0;--red:#dc2626}
+@media(prefers-color-scheme:dark){:root{--bg:#0b1220;--card:#162033;--txt:#e5edf7;--mut:#94a3b8;--pri:#2dd4bf;--pri2:#134e4a;--fol:#fbbf24;--fol2:#451a03;--aus:#cbd5e1;--aus2:#334155;--bd:#27344d}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt);padding-bottom:env(safe-area-inset-bottom)}
 header{background:var(--pri);color:#fff;padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}
@@ -27,8 +27,14 @@ button{font:inherit;border:0;border-radius:10px;padding:9px 14px;background:var(
 button.sec{background:transparent;color:var(--txt);border:1px solid var(--bd)}
 button.danger{background:var(--red);color:#fff}
 button.ic{background:rgba(255,255,255,.2);color:inherit;padding:6px 10px}
+button.sm{padding:3px 9px;font-size:13px}
+button:disabled{opacity:.5;cursor:not-allowed}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .sp{flex:1}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tab{flex:1;background:var(--card);color:var(--txt);border:1px solid var(--bd);padding:9px 4px;font-size:14px}
+.tab.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+@media(prefers-color-scheme:dark){.tab.on{color:#042f2e}}
 .nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .nav h2{margin:0;font-size:18px;text-transform:capitalize}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:6px}
@@ -43,19 +49,24 @@ button.ic{background:rgba(255,255,255,.2);color:inherit;padding:6px 10px}
 .c.today{outline:2px solid var(--pri)}
 .c.sel{box-shadow:0 0 0 2px var(--txt)}
 .c .n{font-weight:600;font-size:13px}
+.c .w{position:absolute;top:1px;right:3px;font-size:11px}
 .c.P{background:var(--pri2)}
 .c.F{background:var(--fol2)}
+.c.A{background:var(--aus2)}
 .tag{display:block;font-size:11px;font-weight:700;margin-top:2px}
-.c.P .tag{color:var(--pri)}.c.F .tag{color:var(--fol)}
+.c.P .tag{color:var(--pri)}.c.F .tag{color:var(--fol)}.c.A .tag{color:var(--aus)}
 .bars{display:flex;flex-direction:column;gap:2px;margin-top:2px}
 .bar{font-size:10px;border-radius:4px;padding:0 3px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:14px}
 .bar.f{background:transparent!important;border:1px dashed;color:inherit}
+.bar.a{background:transparent!important;border:1px dotted;opacity:.7}
 table{width:100%;border-collapse:collapse;font-size:14px}
 td,th{padding:7px 4px;border-bottom:1px solid var(--bd);text-align:left}
 th{color:var(--mut);font-weight:600;font-size:12px}
 .badge{display:inline-block;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700}
-.bP{background:var(--pri2);color:var(--pri)}.bF{background:var(--fol2);color:var(--fol)}
+.bP{background:var(--pri2);color:var(--pri)}.bF{background:var(--fol2);color:var(--fol)}.bA{background:var(--aus2);color:var(--aus)}
+.lv{display:inline-block;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700;color:#fff}
 .mut{color:var(--mut);font-size:13px}
+.warn{color:var(--red);font-size:13px;margin:6px 0}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:20}
 .md{background:var(--card);width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}
 @media(min-width:600px){.ov{align-items:center}.md{border-radius:18px}}
@@ -66,25 +77,52 @@ input[type=color]{padding:2px;height:42px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
 .stats div{background:var(--bg);border-radius:10px;padding:8px}
 .empty{text-align:center;padding:30px 10px}
+.rm{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd)}
+.rm select{width:auto;max-width:150px;padding:6px;font-size:13px}
+.inst{display:flex;align-items:center;gap:10px;border-color:var(--pri)}
+@media print{header,.tabs,button,.chips,.inst{display:none!important}body{background:#fff}}
 </style>
 </head>
 <body>
 <header>
   <h1>🩺 Escala Enfermagem</h1>
-  <div class="row"><button class="ic" onclick="openNurse()">＋ Enfermeiro</button><button class="ic" onclick="openMenu()">⋯</button></div>
+  <div class="row"><button class="ic" onclick="openMember()">＋ Membro</button><button class="ic" onclick="openMenu()">⋯</button></div>
 </header>
 <main id="app"></main>
 
 <script>
 const KEY='escala-enfermagem-v1';
+const HIDE_INST='escala-enfermagem-hide-install';
 const MES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
 const DS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const DSF=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
 const CORES=['#0f766e','#2563eb','#9333ea','#db2777','#ea580c','#65a30d','#0891b2','#b45309'];
+const ROLE={enf:'Enfermeiro(a)',tec:'Técnico(a) de enfermagem'};
+const ROLEC={enf:'Enfermeiro(a)',tec:'Técnico(a)'};
+const LVL={1:'Baixa',2:'Média',3:'Alta'};
+const LCOL={1:'#16a34a',2:'#d97706',3:'#dc2626'};
+const ST={P:'Plantão',F:'Folga',A:'Ausente'};
 let S=load();
 
 function load(){
-  try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.nurses))return s}catch(e){}
-  const t=new Date();return{nurses:[],y:t.getFullYear(),m:t.getMonth(),sel:'all',day:null};
+  let s=null;try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  const t=new Date();
+  if(!s||!Array.isArray(s.nurses))s={nurses:[],y:t.getFullYear(),m:t.getMonth(),sel:'all',day:null};
+  return norm(s);
+}
+/* Garante que dados antigos (sem funções, quartos, regras...) continuem funcionando */
+function norm(s){
+  const t=new Date();
+  if(s.y==null)s.y=t.getFullYear();
+  if(s.m==null)s.m=t.getMonth();
+  if(!s.sel)s.sel='all';
+  s.nurses.forEach(n=>{if(!n.role)n.role='enf';if(!n.ov)n.ov={}});
+  if(!Array.isArray(s.rooms))s.rooms=[];
+  if(!s.plans||typeof s.plans!=='object')s.plans={};
+  s.rules=Object.assign({work:5,step:2,minEnf:0,minTec:0},s.rules||{});
+  if(!s.tab)s.tab='escala';
+  if(!s.dDay)s.dDay=null;
+  return s;
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const pad=n=>String(n).padStart(2,'0');
@@ -94,37 +132,67 @@ const D=n=>new Date(n*864e5);
 const parse=s=>{const[a,b,c]=s.split('-').map(Number);return dn(a,b-1,c)};
 const isoOf=n=>D(n).toISOString().slice(0,10);
 const fmt=n=>pad(D(n).getUTCDate())+'/'+pad(D(n).getUTCMonth()+1);
+const fmtFull=n=>fmt(n)+'/'+D(n).getUTCFullYear();
 const dow=n=>D(n).getUTCDay();
 const todayN=()=>{const t=new Date();return dn(t.getFullYear(),t.getMonth(),t.getDate())};
+const byName=(a,b)=>a.name.localeCompare(b.name,'pt-BR',{numeric:true});
 
-/* Núcleo do cálculo: 12x36 => plantão a cada 2 dias.
-   A cada 5 plantões, o 6º "encaixe" vira FOLGA (dia do próximo plantão). Depois o ciclo recomeça. */
+/* ===== Regras de escala =====
+   Plantão a cada `step` dias (2 => 12x36). Após `work` plantões seguidos,
+   o próximo encaixe vira FOLGA e o ciclo recomeça. */
 function sched(nurse,a,b){
+  const W=S.rules.work,STEP=S.rules.step;
   const m=new Map();
   const an=nurse.anchors.map(x=>({s:parse(x.date),d:x.done})).sort((p,q)=>p.s-q.s);
   for(let i=0;i<an.length;i++){
     const st=an[i].s,end=i+1<an.length?an[i+1].s:b+1;
-    let k=Math.max(0,Math.floor((a-st)/2));
+    let k=Math.max(0,Math.floor((a-st)/STEP));
     for(;;k++){
-      const day=st+2*k;
+      const day=st+STEP*k;
       if(day>=end||day>b)break;
       if(day<a)continue;
-      m.set(day,(an[i].d+k)%6===5?'F':'P');
+      m.set(day,(an[i].d+k)%(W+1)===W?'F':'P');
     }
   }
   return m;
 }
+/* Escala efetiva = cálculo automático + alterações pontuais (trocas, extras, ausências) */
+function eff(n,a,b){
+  const m=sched(n,a,b);
+  for(const [iso,t] of Object.entries(n.ov||{})){
+    const d=parse(iso);if(d<a||d>b)continue;
+    m.set(d,t);
+  }
+  return m;
+}
+const statusAt=(n,d)=>eff(n,d,d).get(d)||null;
 const monthRange=(y,m)=>[dn(y,m,1),dn(y,m+1,0)];
+const rulesTxt=()=>`${S.rules.work} plantões de 12h (1 a cada ${S.rules.step} dias) e depois 1 folga`;
 
+function coverage(sc,d){
+  let enf=0,tec=0;
+  S.nurses.forEach(n=>{if(sc[n.id].get(d)==='P'){n.role==='tec'?tec++:enf++}});
+  return{enf,tec,low:(S.rules.minEnf>0&&enf<S.rules.minEnf)||(S.rules.minTec>0&&tec<S.rules.minTec)};
+}
+
+/* ===== Navegação por abas ===== */
 function render(){
   const app=document.getElementById('app');
+  const tabs=[['escala','📅 Escala'],['quartos','🛏️ Quartos'],['dist','🧩 Distribuição']];
+  let h=`<div class="tabs">`+tabs.map(t=>`<button class="tab ${S.tab===t[0]?'on':''}" onclick="setTab('${t[0]}')">${t[1]}</button>`).join('')+`</div>`;
+  h+=installBanner();
+  h+=S.tab==='quartos'?viewRooms():S.tab==='dist'?viewDist():viewEscala();
+  app.innerHTML=h;
+}
+function setTab(t){S.tab=t;save();render();window.scrollTo(0,0)}
+
+function viewEscala(){
   if(!S.nurses.length){
-    app.innerHTML=`<div class="card empty"><div class="big">Bem-vindo 👋</div><p class="mut">Cadastre o primeiro enfermeiro informando o dia em que começa o plantão. O app calcula plantões (12x36) e folgas do mês inteiro e continua automaticamente nos próximos meses.</p><button onclick="openNurse()">Cadastrar enfermeiro</button></div>`;
-    return;
+    return `<div class="card empty"><div class="big">Bem-vindo 👋</div><p class="mut">Cadastre os membros da equipe (enfermeiros e técnicos) informando o dia em que começa o plantão. O app calcula plantões (12x36) e folgas do mês inteiro e continua automaticamente nos próximos meses.</p><button onclick="openMember()">Cadastrar membro da equipe</button></div>`;
   }
   if(S.sel!=='all'&&!S.nurses.find(n=>n.id===S.sel))S.sel='all';
   const [a,b]=monthRange(S.y,S.m);
-  const sc={};S.nurses.forEach(n=>sc[n.id]=sched(n,a,b));
+  const sc={};S.nurses.forEach(n=>sc[n.id]=eff(n,a,b));
   const list=S.sel==='all'?S.nurses:S.nurses.filter(n=>n.id===S.sel);
   let h='';
   h+=`<div class="chips"><button class="chip ${S.sel==='all'?'on':''}" onclick="setSel('all')">Todos</button>`+
@@ -139,78 +207,89 @@ function render(){
     if(S.day===d)cls+=' sel';
     if(S.sel!=='all'){
       const t=sc[S.sel].get(d);
-      if(t){cls+=' '+t;inner=`<span class="tag">${t==='P'?'🏥 12h':'🌴 Folga'}</span>`}
+      if(t){cls+=' '+t;inner=`<span class="tag">${t==='P'?'🏥 12h':t==='F'?'🌴 Folga':'🚫 Ausente'}</span>`}
     }else{
       inner='<div class="bars">'+S.nurses.map(n=>{
         const t=sc[n.id].get(d);if(!t)return'';
-        return `<div class="bar ${t==='F'?'f':''}" style="background:${n.color};color:${t==='F'?n.color:'#fff'};border-color:${n.color}">${t==='F'?'F ':''}${esc(n.name.split(' ')[0])}</div>`}).join('')+'</div>';
+        const c=t==='P'?'':t==='F'?'f':'a';
+        return `<div class="bar ${c}" style="background:${n.color};color:${t==='P'?'#fff':n.color};border-color:${n.color}">${t==='F'?'F ':t==='A'?'✕ ':''}${esc(n.name.split(' ')[0])}</div>`}).join('')+'</div>';
     }
-    h+=`<div class="${cls}" onclick="pickDay(${d})"><div class="n">${D(d).getUTCDate()}</div>${inner}</div>`;
+    const cv=coverage(sc,d);
+    h+=`<div class="${cls}" onclick="pickDay(${d})"><div class="n">${D(d).getUTCDate()}</div>${cv.low?'<span class="w">⚠️</span>':''}${inner}</div>`;
   }
-  h+=`</div><div class="row mut" style="margin-top:10px"><span><span class="badge bP">P</span> Plantão 12h</span><span><span class="badge bF">F</span> Folga</span></div></div>`;
+  h+=`</div><div class="row mut" style="margin-top:10px"><span><span class="badge bP">P</span> Plantão 12h</span><span><span class="badge bF">F</span> Folga</span><span><span class="badge bA">✕</span> Ausente</span></div>
+  <div class="row" style="margin-top:10px"><span class="mut sp">Regra atual: ${rulesTxt()}.</span><button class="sec sm" onclick="openRules()">⚙️ Regras</button></div></div>`;
 
   if(S.day!=null){
-    const rows=S.nurses.map(n=>{const t=sc[n.id].get(S.day);return t?`<tr><td><span class="dot" style="background:${n.color}"></span>${esc(n.name)}</td><td><span class="badge b${t}">${t==='P'?'Plantão':'Folga'}</span></td></tr>`:''}).join('');
-    h+=`<div class="card"><b>${DS[dow(S.day)]}, ${fmt(S.day)}</b>${rows?`<table>${rows}</table>`:'<p class="mut">Ninguém escalado neste dia.</p>'}</div>`;
+    const iso=isoOf(S.day),cv=coverage(sc,S.day);
+    const rows=S.nurses.map(n=>{const t=sc[n.id].get(S.day);if(!t)return'';
+      const alt=n.ov&&n.ov[iso]!=null;
+      return `<tr><td><span class="dot" style="background:${n.color}"></span>${esc(n.name)}<div class="mut">${ROLEC[n.role]}${alt?' · alterado':''}</div></td><td><span class="badge b${t}">${ST[t]}</span></td><td style="text-align:right"><button class="sec sm" onclick="openChange('${n.id}',${S.day})">✎ Alterar</button></td></tr>`}).join('');
+    h+=`<div class="card"><div class="row"><b>${DS[dow(S.day)]}, ${fmt(S.day)}</b><span class="sp"></span><button class="sec sm" onclick="openSwap(${S.day})">🔁 Troca de plantão</button></div>
+    ${cv.low?`<div class="warn">⚠️ Cobertura abaixo do mínimo: ${cv.enf} enfermeiro(s) (mín. ${S.rules.minEnf}) e ${cv.tec} técnico(s) (mín. ${S.rules.minTec}).</div>`:''}
+    ${rows?`<table>${rows}</table>`:'<p class="mut">Ninguém escalado neste dia.</p>'}</div>`;
   }
 
   if(S.sel==='all'){
-    h+=`<div class="card"><b>Resumo do mês</b><table><tr><th>Enfermeiro</th><th>Plantões</th><th>Horas</th><th>Folgas</th></tr>`+
-      S.nurses.map(n=>{const v=[...sc[n.id].values()];const p=v.filter(x=>x==='P').length,f=v.length-p;
-      return `<tr><td><span class="dot" style="background:${n.color}"></span>${esc(n.name)}</td><td>${p}</td><td>${p*12}h</td><td>${f}</td></tr>`}).join('')+`</table></div>`;
+    h+=`<div class="card"><b>Resumo do mês</b><table><tr><th>Membro</th><th>Plantões</th><th>Horas</th><th>Folgas</th></tr>`+
+      S.nurses.map(n=>{const v=[...sc[n.id].values()];const p=v.filter(x=>x==='P').length,f=v.filter(x=>x==='F').length;
+      return `<tr><td><span class="dot" style="background:${n.color}"></span>${esc(n.name)}<div class="mut">${ROLEC[n.role]}</div></td><td>${p}</td><td>${p*12}h</td><td>${f}</td></tr>`}).join('')+`</table></div>`;
   }else{
     const n=list[0],mp=sc[n.id],ent=[...mp.entries()].sort((x,y)=>x[0]-y[0]);
     const p=ent.filter(e=>e[1]==='P'),f=ent.filter(e=>e[1]==='F');
     const par=new Set(p.map(e=>D(e[0]).getUTCDate()%2));
-    const parTxt=!p.length?'—':par.size>1?'Alterna (mês de 31 dias)':par.has(1)?'Dias ímpares':'Dias pares';
+    const parTxt=!p.length?'—':par.size>1?'Alterna':par.has(1)?'Dias ímpares':'Dias pares';
     const [na,nb]=monthRange(S.m===11?S.y+1:S.y,(S.m+1)%12);
     const nx=[...sched(n,na,nb).entries()].sort((x,y)=>x[0]-y[0])[0];
-    h+=`<div class="card"><div class="row"><b style="font-size:17px"><span class="dot" style="background:${n.color}"></span>${esc(n.name)}</b><span class="sp"></span><button class="sec" onclick="openNurse('${n.id}')">Editar</button></div>
+    h+=`<div class="card"><div class="row"><b style="font-size:17px"><span class="dot" style="background:${n.color}"></span>${esc(n.name)}</b><span class="mut">${ROLEC[n.role]}</span><span class="sp"></span><button class="sec" onclick="openMember('${n.id}')">Editar</button></div>
     <div class="stats" style="margin:10px 0"><div><div class="big">${p.length}</div><div class="mut">Plantões</div></div><div><div class="big">${p.length*12}h</div><div class="mut">Horas</div></div><div><div class="big">${f.length}</div><div class="mut">Folgas</div></div></div>
     <div class="mut">Padrão neste mês: <b>${parTxt}</b></div>
     ${nx?`<div class="mut" style="margin-top:4px">Continua automaticamente em ${MES[(S.m+1)%12]}: primeiro ${nx[1]==='P'?'plantão':'dia de folga'} em <b>${fmt(nx[0])}</b></div>`:''}
     <div class="row" style="margin-top:10px"><button onclick="openAdjust('${n.id}')">📅 Ajustar início do mês</button></div></div>
-    <div class="card"><b>Dias do mês</b><table>`+(ent.map(e=>`<tr><td>${DS[dow(e[0])]} ${fmt(e[0])}</td><td><span class="badge b${e[1]}">${e[1]==='P'?'Plantão 12h':'Folga'}</span></td></tr>`).join('')||'<tr><td class="mut">Sem escala neste mês.</td></tr>')+`</table></div>`;
+    <div class="card"><b>Dias do mês</b><table>`+(ent.map(e=>`<tr><td>${DS[dow(e[0])]} ${fmt(e[0])}${n.ov&&n.ov[isoOf(e[0])]!=null?' <span class="mut">(alterado)</span>':''}</td><td><span class="badge b${e[1]}">${e[1]==='P'?'Plantão 12h':ST[e[1]]}</span></td></tr>`).join('')||'<tr><td class="mut">Sem escala neste mês.</td></tr>')+`</table></div>`;
   }
-  app.innerHTML=h;
+  return h;
 }
 function setSel(id){S.sel=id;S.day=null;save();render()}
 function nav(d){S.m+=d;if(S.m<0){S.m=11;S.y--}if(S.m>11){S.m=0;S.y++}S.day=null;save();render()}
 function goToday(){const t=new Date();S.y=t.getFullYear();S.m=t.getMonth();S.day=todayN();save();render()}
 function pickDay(d){S.day=S.day===d?null:d;save();render()}
 
-/* Modais */
+/* ===== Modais ===== */
 function modal(html){closeModal();const o=document.createElement('div');o.className='ov';o.id='ov';o.innerHTML=`<div class="md">${html}</div>`;o.addEventListener('click',e=>{if(e.target===o)closeModal()});document.body.appendChild(o)}
 function closeModal(){const o=document.getElementById('ov');if(o)o.remove()}
+const doneOpts=(sel)=>Array.from({length:S.rules.work},(_,i)=>i).map(i=>`<option value="${i}" ${i===sel?'selected':''}>${i}${i===0?' (começando um ciclo novo)':''}</option>`).join('');
 
-function openNurse(id){
+/* ===== Membros da equipe ===== */
+function openMember(id){
   const n=id?S.nurses.find(x=>x.id===id):null;
   const t=new Date();const def=`${S.y}-${pad(S.m+1)}-${pad(t.getFullYear()===S.y&&t.getMonth()===S.m?t.getDate():1)}`;
   const a=n?n.anchors[0]:{date:def,done:0};
-  modal(`<h3 style="margin-top:0">${n?'Editar':'Novo'} enfermeiro</h3>
+  modal(`<h3 style="margin-top:0">${n?'Editar':'Novo'} membro da equipe</h3>
   <label>Nome</label><input id="fn" value="${n?esc(n.name):''}" placeholder="Ex.: Maria Silva">
+  <label>Função</label><select id="fr"><option value="tec" ${n&&n.role==='tec'?'selected':''}>${ROLE.tec}</option><option value="enf" ${n&&n.role==='enf'?'selected':''}>${ROLE.enf}</option></select>
   <label>Cor</label><input id="fc" type="color" value="${n?n.color:CORES[S.nurses.length%CORES.length]}">
   ${n?`<label>Ajustes de ciclo cadastrados</label>${n.anchors.slice().sort((x,y)=>x.date<y.date?-1:1).map(x=>`<div class="row" style="margin-bottom:4px"><span class="mut sp">Início ${x.date.split('-').reverse().join('/')} · ${x.done} plantão(ões) desde a última folga</span>${n.anchors.length>1?`<button class="sec" style="padding:4px 10px" onclick="delAnchor('${n.id}','${x.date}')">✕</button>`:''}</div>`).join('')}`:`
   <label>Dia do 1º plantão</label><input id="fd" type="date" value="${a.date}">
   <label>Plantões já feitos desde a última folga</label>
-  <select id="fx">${[0,1,2,3,4].map(i=>`<option value="${i}">${i}${i===0?' (começando um ciclo novo)':''}</option>`).join('')}</select>`}
-  <div class="row" style="margin-top:16px">${n?`<button class="danger" onclick="delNurse('${n.id}')">Excluir</button>`:''}<span class="sp"></span><button class="sec" onclick="closeModal()">Cancelar</button><button onclick="saveNurse('${id||''}')">Salvar</button></div>`);
+  <select id="fx">${doneOpts(0)}</select>`}
+  <div class="row" style="margin-top:16px">${n?`<button class="danger" onclick="delNurse('${n.id}')">Excluir</button>`:''}<span class="sp"></span><button class="sec" onclick="closeModal()">Cancelar</button><button onclick="saveMember('${id||''}')">Salvar</button></div>`);
 }
-function saveNurse(id){
+function saveMember(id){
   const name=document.getElementById('fn').value.trim();
   if(!name){alert('Informe o nome.');return}
-  const color=document.getElementById('fc').value;
-  if(id){const n=S.nurses.find(x=>x.id===id);n.name=name;n.color=color}
+  const color=document.getElementById('fc').value,role=document.getElementById('fr').value;
+  if(id){const n=S.nurses.find(x=>x.id===id);n.name=name;n.color=color;n.role=role}
   else{
     const date=document.getElementById('fd').value;if(!date){alert('Informe a data do 1º plantão.');return}
     const done=+document.getElementById('fx').value;
-    const n={id:'n'+Date.now(),name,color,anchors:[{date,done}]};
-    S.nurses.push(n);S.sel=n.id;const p=date.split('-');S.y=+p[0];S.m=+p[1]-1;
+    const n={id:'n'+Date.now(),name,role,color,anchors:[{date,done}],ov:{}};
+    S.nurses.push(n);S.sel=n.id;const p=date.split('-');S.y=+p[0];S.m=+p[1]-1;S.tab='escala';
   }
   save();closeModal();render();
 }
-function delNurse(id){if(!confirm('Excluir este enfermeiro e toda a escala dele?'))return;S.nurses=S.nurses.filter(x=>x.id!==id);S.sel='all';save();closeModal();render()}
-function delAnchor(id,date){const n=S.nurses.find(x=>x.id===id);n.anchors=n.anchors.filter(x=>x.date!==date);save();openNurse(id);render()}
+function delNurse(id){if(!confirm('Excluir este membro e toda a escala dele?'))return;S.nurses=S.nurses.filter(x=>x.id!==id);S.sel='all';save();closeModal();render()}
+function delAnchor(id,date){const n=S.nurses.find(x=>x.id===id);n.anchors=n.anchors.filter(x=>x.date!==date);save();openMember(id);render()}
 
 function openAdjust(id){
   const n=S.nurses.find(x=>x.id===id);
@@ -218,10 +297,10 @@ function openAdjust(id){
   const f=[...sched(n,a,b).entries()].sort((x,y)=>x[0]-y[0])[0];
   const def=isoOf(f?f[0]:a);
   modal(`<h3 style="margin-top:0">Ajustar início – ${esc(n.name)}</h3>
-  <p class="mut">Por padrão o cálculo já continua sozinho de um mês para o outro. Use isto só se o início real do plantão em <b>${MES[S.m]}</b> for diferente do calculado (troca de plantão, atestado, mudança de escala).</p>
+  <p class="mut">Por padrão o cálculo já continua sozinho de um mês para o outro. Use isto só se o início real do plantão em <b>${MES[S.m]}</b> for diferente do calculado (mudança permanente de ciclo). Para trocar ou faltar em um dia específico, use <b>Alterar</b> no dia.</p>
   <label>Dia em que começa o plantão</label><input id="ad" type="date" value="${def}">
   <label>Plantões já feitos desde a última folga</label>
-  <select id="ax">${[0,1,2,3,4].map(i=>`<option value="${i}">${i}${i===0?' (ciclo novo)':''}</option>`).join('')}</select>
+  <select id="ax">${doneOpts(0)}</select>
   <div class="row" style="margin-top:16px"><span class="sp"></span><button class="sec" onclick="closeModal()">Cancelar</button><button onclick="saveAdjust('${id}')">Recalcular</button></div>`);
 }
 function saveAdjust(id){
@@ -231,18 +310,304 @@ function saveAdjust(id){
   save();closeModal();render();
 }
 
+/* ===== Alteração de escala (pontual) ===== */
+function openChange(id,day){
+  const n=S.nurses.find(x=>x.id===id),iso=isoOf(day),cur=(n.ov&&n.ov[iso])||'';
+  const auto=sched(n,day,day).get(day);
+  const op=(v,l)=>`<option value="${v}" ${cur===v?'selected':''}>${l}</option>`;
+  modal(`<h3 style="margin-top:0">Alterar dia ${fmtFull(day)}</h3>
+  <p class="mut"><b>${esc(n.name)}</b> · pelo ciclo automático: <b>${auto?ST[auto]:'sem plantão'}</b>. A alteração vale só para este dia e não muda o ciclo dos demais dias.</p>
+  <label>Neste dia</label><select id="cv">${op('','Seguir o ciclo automático')}${op('P','Plantão (extra / cobertura)')}${op('F','Folga (troca / compensação)')}${op('A','Ausente (atestado, férias, falta)')}</select>
+  <div class="row" style="margin-top:16px"><span class="sp"></span><button class="sec" onclick="closeModal()">Cancelar</button><button onclick="saveChange('${id}','${iso}')">Salvar</button></div>`);
+}
+function saveChange(id,iso){
+  const n=S.nurses.find(x=>x.id===id),v=document.getElementById('cv').value;
+  if(!n.ov)n.ov={};
+  if(v==='')delete n.ov[iso];else n.ov[iso]=v;
+  save();closeModal();render();
+}
+function openSwap(day){
+  const iso=isoOf(day);
+  const on=S.nurses.filter(n=>statusAt(n,day)==='P'),off=S.nurses.filter(n=>statusAt(n,day)!=='P');
+  if(!on.length||!off.length){alert(!on.length?'Ninguém está de plantão neste dia.':'Todos já estão de plantão neste dia.');return}
+  const o=l=>l.map(n=>`<option value="${n.id}">${esc(n.name)} (${ROLEC[n.role]})</option>`).join('');
+  modal(`<h3 style="margin-top:0">Troca de plantão – ${fmtFull(day)}</h3>
+  <p class="mut">Quem sai do plantão fica de folga neste dia e quem cobre assume o plantão. O ciclo dos outros dias não muda.</p>
+  <label>Quem sai</label><select id="sw1">${o(on)}</select>
+  <label>Quem cobre</label><select id="sw2">${o(off)}</select>
+  <div class="row" style="margin-top:16px"><span class="sp"></span><button class="sec" onclick="closeModal()">Cancelar</button><button onclick="saveSwap('${iso}')">Trocar</button></div>`);
+}
+function saveSwap(iso){
+  const a=S.nurses.find(x=>x.id===document.getElementById('sw1').value),b=S.nurses.find(x=>x.id===document.getElementById('sw2').value);
+  if(!a.ov)a.ov={};if(!b.ov)b.ov={};
+  a.ov[iso]='F';b.ov[iso]='P';
+  save();closeModal();render();
+}
+
+/* ===== Regras ===== */
+function openRules(){
+  const r=S.rules;
+  modal(`<h3 style="margin-top:0">Regras de escala</h3>
+  <label>Plantões seguidos antes de 1 folga</label><input id="rw" type="number" min="1" max="10" value="${r.work}">
+  <label>Intervalo entre plantões (dias) – 2 = 12x36</label><input id="rs" type="number" min="2" max="7" value="${r.step}">
+  <label>Mínimo de enfermeiros por dia (0 = sem aviso)</label><input id="re" type="number" min="0" max="50" value="${r.minEnf}">
+  <label>Mínimo de técnicos por dia (0 = sem aviso)</label><input id="rt" type="number" min="0" max="50" value="${r.minTec}">
+  <p class="mut">Mudar o ciclo recalcula a escala de todos a partir das datas de início cadastradas. Dias com cobertura abaixo do mínimo ganham ⚠️ no calendário.</p>
+  <div class="row" style="margin-top:12px"><span class="sp"></span><button class="sec" onclick="closeModal()">Cancelar</button><button onclick="saveRules()">Salvar</button></div>`);
+}
+function saveRules(){
+  const g=(id,lo,hi)=>Math.min(hi,Math.max(lo,parseInt(document.getElementById(id).value)||lo));
+  const n={work:g('rw',1,10),step:g('rs',2,7),minEnf:g('re',0,50),minTec:g('rt',0,50)};
+  S.nurses.forEach(x=>x.anchors.forEach(a=>{if(a.done>=n.work)a.done=n.work-1}));
+  S.rules=n;save();closeModal();render();
+}
+
+/* ===== Quartos ===== */
+function viewRooms(){
+  const rs=S.rooms.slice().sort(byName);
+  let h=`<div class="card"><div class="row"><b style="font-size:17px">Quartos do hospital</b><span class="sp"></span><button class="sec sm" onclick="openBatch()">＋ Vários</button><button class="sm" onclick="openRoom()">＋ Quarto</button></div>
+  <p class="mut" style="margin:6px 0 0">Nível de complexidade: <span class="lv" style="background:${LCOL[1]}">1 Baixa</span> <span class="lv" style="background:${LCOL[2]}">2 Média</span> <span class="lv" style="background:${LCOL[3]}">3 Alta</span>. Quartos de nível maior pesam mais na distribuição.</p></div>`;
+  if(!rs.length)return h+`<div class="card empty"><p class="mut">Nenhum quarto cadastrado ainda.</p><button onclick="openRoom()">Cadastrar quarto</button></div>`;
+  const cnt=[1,2,3].map(l=>rs.filter(r=>r.level===l).length);
+  h+=`<div class="card"><div class="stats" style="margin-bottom:8px"><div><div class="big">${cnt[0]}</div><div class="mut">Baixa</div></div><div><div class="big">${cnt[1]}</div><div class="mut">Média</div></div><div><div class="big">${cnt[2]}</div><div class="mut">Alta</div></div></div>`+
+    rs.map(r=>`<div class="rm"><b class="sp">${esc(r.name)}</b><span class="lv" style="background:${LCOL[r.level]}">${LVL[r.level]}</span><button class="sec sm" onclick="openRoom('${r.id}')">Editar</button></div>`).join('')+`</div>`;
+  return h;
+}
+const lvOpts=sel=>[1,2,3].map(l=>`<option value="${l}" ${l===sel?'selected':''}>${l} – ${LVL[l]}</option>`).join('');
+function openRoom(id){
+  const r=id?S.rooms.find(x=>x.id===id):null;
+  modal(`<h3 style="margin-top:0">${r?'Editar':'Novo'} quarto</h3>
+  <label>Número / nome</label><input id="rn" value="${r?esc(r.name):''}" placeholder="Ex.: 101">
+  <label>Nível de complexidade</label><select id="rl">${lvOpts(r?r.level:1)}</select>
+  <div class="row" style="margin-top:16px">${r?`<button class="danger" onclick="delRoom('${r.id}')">Excluir</button>`:''}<span class="sp"></span><button class="sec" onclick="closeModal()">Cancelar</button><button onclick="saveRoom('${id||''}')">Salvar</button></div>`);
+}
+function saveRoom(id){
+  const name=document.getElementById('rn').value.trim(),level=+document.getElementById('rl').value;
+  if(!name){alert('Informe o número ou nome do quarto.');return}
+  if(S.rooms.some(r=>r.id!==id&&r.name.toLowerCase()===name.toLowerCase())){alert('Já existe um quarto com esse nome.');return}
+  if(id){const r=S.rooms.find(x=>x.id===id);r.name=name;r.level=level}
+  else S.rooms.push({id:'r'+Date.now()+Math.floor(Math.random()*1000),name,level});
+  save();closeModal();render();
+}
+function delRoom(id){if(!confirm('Excluir este quarto?'))return;S.rooms=S.rooms.filter(r=>r.id!==id);save();closeModal();render()}
+function openBatch(){
+  modal(`<h3 style="margin-top:0">Cadastrar vários quartos</h3>
+  <p class="mut">Cria uma sequência numérica, por exemplo 101 a 120. Quartos que já existem são ignorados.</p>
+  <label>Prefixo (opcional)</label><input id="bp" placeholder="Ex.: UTI-">
+  <div class="row"><div class="sp"><label>De</label><input id="bf" type="number" value="101"></div><div class="sp"><label>Até</label><input id="bt" type="number" value="110"></div></div>
+  <label>Nível de complexidade</label><select id="bl">${lvOpts(1)}</select>
+  <div class="row" style="margin-top:16px"><span class="sp"></span><button class="sec" onclick="closeModal()">Cancelar</button><button onclick="saveBatch()">Criar</button></div>`);
+}
+function saveBatch(){
+  const p=document.getElementById('bp').value.trim(),f=parseInt(document.getElementById('bf').value),t=parseInt(document.getElementById('bt').value),level=+document.getElementById('bl').value;
+  if(isNaN(f)||isNaN(t)||t<f||t-f>199){alert('Informe um intervalo válido (até 200 quartos).');return}
+  const have=new Set(S.rooms.map(r=>r.name.toLowerCase()));
+  for(let i=f;i<=t;i++){const name=p+i;if(have.has(name.toLowerCase()))continue;S.rooms.push({id:'r'+Date.now()+'_'+i,name,level})}
+  save();closeModal();render();
+}
+
+/* ===== Distribuição de quartos ===== */
+const distIso=()=>S.dDay||isoOf(todayN());
+function onDuty(iso,role){const d=parse(iso);return S.nurses.filter(n=>n.role===role&&statusAt(n,d)==='P').sort(byName)}
+/* Atribuição vigente: só vale para técnicos que continuam de plantão; o resto vira "sem técnico" */
+function getAssign(iso){
+  const techs=onDuty(iso,'tec'),plan=S.plans[iso]||{},res={},un=[];
+  techs.forEach(t=>res[t.id]=[]);
+  const placed=new Set();
+  for(const [tid,rids] of Object.entries(plan)){
+    if(!res[tid])continue;
+    rids.forEach(rid=>{const r=S.rooms.find(x=>x.id===rid);if(r&&!placed.has(rid)){res[tid].push(r);placed.add(rid)}});
+  }
+  S.rooms.forEach(r=>{if(!placed.has(r.id))un.push(r)});
+  Object.values(res).forEach(l=>l.sort(byName));
+  return{techs,res,un:un.sort(byName),has:!!S.plans[iso]};
+}
+const load_=l=>l.reduce((s,r)=>s+r.level,0);
+
+/* Distribui equilibrando a carga (soma dos níveis). Em empate, favorece quem
+   acumulou menos carga em outros dias planejados (rodízio justo). */
+function planDay(iso){
+  const techs=onDuty(iso,'tec');
+  if(!techs.length){alert('Nenhum técnico está de plantão neste dia.');return}
+  if(!S.rooms.length){alert('Cadastre os quartos primeiro.');return}
+  const past={};techs.forEach(t=>past[t.id]=0);
+  for(const [k,p] of Object.entries(S.plans)){
+    if(k===iso)continue;
+    for(const [tid,rids] of Object.entries(p))if(tid in past)rids.forEach(rid=>{const r=S.rooms.find(x=>x.id===rid);if(r)past[tid]+=r.level});
+  }
+  const ld={},ct={},plan={};techs.forEach(t=>{ld[t.id]=0;ct[t.id]=0;plan[t.id]=[]});
+  const rooms=S.rooms.slice().sort((a,b)=>b.level-a.level||byName(a,b));
+  rooms.forEach(r=>{
+    let best=techs[0];
+    for(const t of techs){
+      const x=[ld[t.id],past[t.id],ct[t.id]],y=[ld[best.id],past[best.id],ct[best.id]];
+      if(x[0]<y[0]||(x[0]===y[0]&&(x[1]<y[1]||(x[1]===y[1]&&x[2]<y[2]))))best=t;
+    }
+    plan[best.id].push(r.id);ld[best.id]+=r.level;ct[best.id]++;
+  });
+  S.plans[iso]=plan;save();render();
+}
+function moveRoom(iso,rid,tid){
+  const g=getAssign(iso),plan={};
+  g.techs.forEach(t=>plan[t.id]=g.res[t.id].map(r=>r.id).filter(x=>x!==rid));
+  if(tid&&plan[tid])plan[tid].push(rid);
+  S.plans[iso]=plan;save();render();
+}
+function clearPlan(iso){if(!confirm('Limpar a distribuição deste dia?'))return;delete S.plans[iso];save();render()}
+function setDDay(v){S.dDay=v||null;save();render()}
+
+function viewDist(){
+  const iso=distIso(),d=parse(iso),g=getAssign(iso),enf=onDuty(iso,'enf');
+  let h=`<div class="card"><div class="row"><b style="font-size:17px">Distribuição de quartos</b></div>
+  <label>Dia do plantão</label><input type="date" value="${iso}" onchange="setDDay(this.value)">
+  <p class="mut" style="margin-bottom:0">${DSF[dow(d)]} · ${g.techs.length} técnico(s) e ${enf.length} enfermeiro(s) de plantão · ${S.rooms.length} quarto(s) (carga total ${load_(S.rooms)})</p>`;
+  if(!S.nurses.some(n=>n.role==='tec'))h+=`<div class="warn">Cadastre técnicos de enfermagem em “＋ Membro” (função: Técnico).</div>`;
+  else if(!g.techs.length)h+=`<div class="warn">Nenhum técnico está de plantão neste dia.</div>`;
+  if(!S.rooms.length)h+=`<div class="warn">Cadastre os quartos na aba Quartos.</div>`;
+  h+=`<div class="row" style="margin-top:10px"><button onclick="planDay('${iso}')" ${g.techs.length&&S.rooms.length?'':'disabled'}>🧩 Planejar e distribuir</button>${g.has?`<button class="sec" onclick="clearPlan('${iso}')">Limpar</button>`:''}</div></div>`;
+  if(!g.has||!g.techs.length)return h;
+
+  if(g.un.length)h+=`<div class="card"><b>Sem técnico (${g.un.length})</b><div class="mut">Quartos novos ou de técnicos que saíram do plantão. Escolha um técnico ou replaneje.</div>`+
+    g.un.map(r=>roomRow(iso,r,g.techs,'')).join('')+`</div>`;
+  g.techs.forEach(t=>{
+    const rs=g.res[t.id];
+    h+=`<div class="card"><div class="row"><b><span class="dot" style="background:${t.color}"></span>${esc(t.name)}</b><span class="mut">${rs.length} quarto(s) · carga ${load_(rs)}</span><span class="sp"></span><button class="sm" onclick="pdfTech('${iso}','${t.id}')">📄 PDF</button></div>`+
+      (rs.length?rs.map(r=>roomRow(iso,r,g.techs,t.id)).join(''):'<p class="mut">Nenhum quarto.</p>')+`</div>`;
+  });
+  h+=`<div class="card"><div class="row"><span class="mut sp">Um PDF por técnico, com os quartos e a complexidade de cada um.</span><button onclick="pdfAll('${iso}')">📄 PDF de todos</button></div></div>`;
+  return h;
+}
+function roomRow(iso,r,techs,cur){
+  return `<div class="rm"><b class="sp">${esc(r.name)}</b><span class="lv" style="background:${LCOL[r.level]}">${LVL[r.level]}</span>
+  <select onchange="moveRoom('${iso}','${r.id}',this.value)"><option value="" ${cur===''?'selected':''}>Sem técnico</option>${techs.map(t=>`<option value="${t.id}" ${t.id===cur?'selected':''}>${esc(t.name)}</option>`).join('')}</select></div>`;
+}
+
+/* ===== PDF (gerado no próprio app, funciona offline) ===== */
+const PDFMAP={8211:0x96,8212:0x97,8226:0x95,8216:0x91,8217:0x92,8220:0x93,8221:0x94,8230:0x85};
+function pdfStr(s){
+  let o='';
+  for(const ch of String(s)){
+    let c=ch.codePointAt(0);
+    if(c>255)c=PDFMAP[c]||63;
+    if(c<32)c=32;
+    const x=String.fromCharCode(c);
+    o+=(x==='('||x===')'||x==='\\')?'\\'+x:x;
+  }
+  return o;
+}
+const rgb=h=>[1,3,5].map(i=>(parseInt(h.slice(i,i+2),16)/255).toFixed(3)).join(' ');
+function buildPDF(pages){
+  const objs=[];
+  objs[1]='<< /Type /Catalog /Pages 2 0 R >>';
+  objs[2]=`<< /Type /Pages /Kids [${pages.map((_,i)=>`${5+i*2} 0 R`).join(' ')}] /Count ${pages.length} >>`;
+  objs[3]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+  objs[4]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+  pages.forEach((c,i)=>{
+    objs[5+i*2]=`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6+i*2} 0 R >>`;
+    objs[6+i*2]=`<< /Length ${c.length} >>\nstream\n${c}\nendstream`;
+  });
+  let out='%PDF-1.4\n';const off=[];
+  for(let i=1;i<objs.length;i++){off[i]=out.length;out+=`${i} 0 obj\n${objs[i]}\nendobj\n`}
+  const x=out.length;
+  out+=`xref\n0 ${objs.length}\n0000000000 65535 f \n`+off.slice(1).map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')+
+    `trailer\n<< /Size ${objs.length} /Root 1 0 R >>\nstartxref\n${x}\n%%EOF`;
+  const u=new Uint8Array(out.length);for(let i=0;i<out.length;i++)u[i]=out.charCodeAt(i)&255;
+  return new Blob([u],{type:'application/pdf'});
+}
+/* Folha de um técnico: retorna lista de páginas (arrays de comandos) */
+function sheetPages(iso,tech,rooms,enfNames){
+  const d=parse(iso),pages=[];let c,y;
+  const T=(x,yy,sz,s,bold,col)=>c.push(`${col||'0 0 0'} rg BT /${bold?'F2':'F1'} ${sz} Tf ${x} ${yy} Td (${pdfStr(s)}) Tj ET`);
+  const tableHead=()=>{
+    c.push('0.93 0.95 0.96 rg 40 '+(y-6)+' 515 22 re f');
+    T(46,y,10,'Feito',true);T(100,y,10,'Quarto',true);T(220,y,10,'Complexidade',true);T(340,y,10,'Observações',true);
+    y-=30;
+  };
+  const start=(first)=>{
+    c=[];pages.push(c);
+    c.push(rgb('#0f766e')+' rg 0 782 595 60 re f');
+    T(40,812,18,'Escala Enfermagem',true,'1 1 1');
+    T(40,794,10,'Distribuição de quartos por plantão',false,'1 1 1');
+    y=745;
+    if(first){
+      T(40,y,20,tech.name,true);y-=20;
+      T(40,y,11,`${DSF[dow(d)]}, ${fmtFull(d)}  -  ${ROLE[tech.role]}  -  Plantão de 12h`,false,'0.35 0.4 0.45');y-=16;
+      T(40,y,11,`${rooms.length} quarto(s)  -  carga total: ${load_(rooms)} ponto(s) de complexidade`);y-=16;
+      if(enfNames.length){T(40,y,10,'Enfermeiro(s) de plantão: '+enfNames.join(', '),false,'0.35 0.4 0.45');y-=16}
+      y-=14;
+    }else{T(40,y,12,tech.name+' (continuação)',true);y-=30}
+    tableHead();
+  };
+  start(true);
+  if(!rooms.length){T(40,y,12,'Nenhum quarto atribuído neste plantão.',false,'0.35 0.4 0.45')}
+  rooms.forEach(r=>{
+    if(y<80)start(false);
+    c.push('0.4 G 1 w 48 '+(y-3)+' 12 12 re S');
+    T(100,y,13,r.name,true);
+    c.push(rgb(LCOL[r.level])+' rg 220 '+(y-5)+' 90 16 re f');
+    T(226,y,10,`${r.level} - ${LVL[r.level]}`,true,'1 1 1');
+    c.push('0.75 G 340 '+(y-3)+' m 555 '+(y-3)+' l S');
+    y-=28;
+  });
+  const gen=new Date();
+  pages.forEach((p,i)=>{
+    c=p;
+    T(40,28,8,`Gerado em ${pad(gen.getDate())}/${pad(gen.getMonth()+1)}/${gen.getFullYear()} ${pad(gen.getHours())}:${pad(gen.getMinutes())}`,false,'0.5 0.5 0.5');
+    T(520,28,8,`Pág. ${i+1}/${pages.length}`,false,'0.5 0.5 0.5');
+  });
+  return pages.map(p=>p.join('\n'));
+}
+const slug=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'tecnico';
+function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
+function pdfTech(iso,tid){
+  const g=getAssign(iso),t=g.techs.find(x=>x.id===tid);if(!t)return;
+  const enf=onDuty(iso,'enf').map(n=>n.name);
+  download(buildPDF(sheetPages(iso,t,g.res[tid],enf)),`quartos-${slug(t.name)}-${iso}.pdf`);
+}
+function pdfAll(iso){
+  const g=getAssign(iso),enf=onDuty(iso,'enf').map(n=>n.name);
+  if(!g.techs.length)return;
+  const pages=g.techs.flatMap(t=>sheetPages(iso,t,g.res[t.id],enf));
+  download(buildPDF(pages),`quartos-todos-${iso}.pdf`);
+}
+
+/* ===== Instalar como app ===== */
+let dip=null;
+const isStandalone=()=>(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dip=e;render()});
+window.addEventListener('appinstalled',()=>{dip=null;render()});
+function canOfferInstall(){return !isStandalone()&&(dip||isIOS)}
+function installBanner(){
+  let hidden=false;try{hidden=localStorage.getItem(HIDE_INST)==='1'}catch(e){}
+  if(hidden||!canOfferInstall())return'';
+  return `<div class="card inst"><div class="sp"><b>📲 Instale como app</b><div class="mut">Abre em tela cheia e funciona sem internet.</div></div><button onclick="installApp()">Instalar</button><button class="sec sm" onclick="hideInstall()">✕</button></div>`;
+}
+function hideInstall(){try{localStorage.setItem(HIDE_INST,'1')}catch(e){}render()}
+function installApp(){
+  if(dip){dip.prompt();dip.userChoice.finally(()=>{dip=null;closeModal();render()});return}
+  if(isStandalone()){modal(`<h3 style="margin-top:0">Já instalado ✅</h3><p class="mut">Você já está usando o app instalado.</p><div class="row"><span class="sp"></span><button onclick="closeModal()">Ok</button></div>`);return}
+  modal(`<h3 style="margin-top:0">Instalar como app</h3>`+(isIOS
+    ?`<p class="mut">No iPhone/iPad (Safari): toque em <b>Compartilhar</b> (quadrado com seta) e depois em <b>Adicionar à Tela de Início</b>.</p>`
+    :`<p class="mut">No Chrome/Edge: abra o menu do navegador (⋮) e escolha <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>. Se a opção não aparecer, abra o endereço do app pelo navegador (não por dentro de outro aplicativo) e tente de novo.</p>`)+
+    `<div class="row"><span class="sp"></span><button onclick="closeModal()">Entendi</button></div>`);
+}
+
+/* ===== Menu / backup ===== */
 function openMenu(){
   modal(`<h3 style="margin-top:0">Menu</h3>
   <div class="row" style="flex-direction:column;align-items:stretch;gap:8px">
+  ${isStandalone()?'':`<button onclick="installApp()">📲 Instalar como app</button>`}
+  <button class="sec" onclick="closeModal();openRules()">⚙️ Regras de escala</button>
   <button class="sec" onclick="exportData()">⬇️ Exportar backup (.json)</button>
   <button class="sec" onclick="document.getElementById('imp').click()">⬆️ Importar backup</button>
-  <button class="sec" onclick="closeModal();window.print()">🖨️ Imprimir / salvar PDF</button>
+  <button class="sec" onclick="closeModal();window.print()">🖨️ Imprimir tela / salvar PDF</button>
   <button class="danger" onclick="clearAll()">Apagar todos os dados</button></div>
   <p class="mut">Os dados ficam salvos só neste aparelho (localStorage). Faça backup de vez em quando.</p>
   <input type="file" id="imp" accept=".json,application/json" hidden onchange="importData(event)">`);
 }
-function exportData(){const b=new Blob([JSON.stringify(S)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='escala-enfermagem-backup.json';a.click()}
-function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const s=JSON.parse(r.result);if(!Array.isArray(s.nurses))throw 0;S=s;save();closeModal();render()}catch(x){alert('Arquivo inválido.')}};r.readAsText(f)}
+function exportData(){const b=new Blob([JSON.stringify(S)],{type:'application/json'});download(b,'escala-enfermagem-backup.json')}
+function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const s=JSON.parse(r.result);if(!Array.isArray(s.nurses))throw 0;S=norm(s);save();closeModal();render()}catch(x){alert('Arquivo inválido.')}};r.readAsText(f)}
 function clearAll(){if(confirm('Apagar TODOS os dados deste aparelho?')){localStorage.removeItem(KEY);S=load();closeModal();render()}}
 
 render();
